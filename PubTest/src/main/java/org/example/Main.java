@@ -23,7 +23,7 @@ public class Main {
         properties.setProperty(JCSMPProperties.PASSWORD, "dkakwek0929!");
 
         final JCSMPSession session = JCSMPFactory.onlyInstance().createSession(properties);
-
+        PricePublisher pricePublisher = new PricePublisher(session);
         session.connect();
 
         XMLMessageProducer prod = session.getMessageProducer(new JCSMPStreamingPublishEventHandler() {
