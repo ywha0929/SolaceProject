@@ -14,18 +14,16 @@ import static java.lang.System.exit;
 public class Main {
     public static final String EXIT_MESSAGE = "End of System";
     public static void main(String[] args) throws JCSMPException {
-        final JCSMPProperties properties = new JCSMPProperties();
-        properties.setProperty(JCSMPProperties.HOST,"tcp://mr-connection-vht20gwjoky.messaging.solace.cloud:55555");
-        properties.setProperty(JCSMPProperties.USERNAME, "6G_YEONGWOOHA");
-        properties.setProperty(JCSMPProperties.VPN_NAME,  "ai6g");
-        properties.setProperty(JCSMPProperties.PASSWORD, "dkakwek0929!");
 
-        final JCSMPSession session = JCSMPFactory.onlyInstance().createSession(properties);
-        PricePublisher pricePublisher = new PricePublisher(session);
+//        PricePublisher pricePublisher = new PricePublisher();
+        HandleRequestThread handleRequestThread = new HandleRequestThread();
+        AskBidRequestSubscriber askBidRequestSubscriber = new AskBidRequestSubscriber(handleRequestThread.queueRequests);
+        handleRequestThread.start();
+        askBidRequestSubscriber.start();
 
-        //for testing
-        ConsoleThread consoleThread = new ConsoleThread(pricePublisher);
-        consoleThread.start();
+//        //for testing
+//        ConsoleThread consoleThread = new ConsoleThread(pricePublisher);
+//        consoleThread.start();
     }
 }
 

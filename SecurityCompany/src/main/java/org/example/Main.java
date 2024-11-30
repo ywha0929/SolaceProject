@@ -1,17 +1,19 @@
 package org.example;
 
+import com.solacesystems.jcsmp.JCSMPException;
+
+import java.util.Scanner;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+    public static String CompanyName;
+    public static final String EXIT_MESSAGE = "End of System";
+    public static int mode; // 0 for auto 1 for manual
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+    public static void main(String[] args) throws JCSMPException {
+        AskBidPublisher askBidPublisher = new AskBidPublisher();
+        ManualUserInterfaceThread manualUserInterfaceThread = new ManualUserInterfaceThread(askBidPublisher);
+        manualUserInterfaceThread.start();
     }
 }
