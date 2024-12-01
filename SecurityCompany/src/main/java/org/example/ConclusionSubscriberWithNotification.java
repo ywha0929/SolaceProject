@@ -67,7 +67,8 @@ public class ConclusionSubscriberWithNotification extends JFrame {
                         public void onReceive(BytesXMLMessage msg) {
                             if (msg instanceof TextMessage) {
                                 ExchangeConclusionMessage message = ExchangeConclusionMessage.createFromJson(((TextMessage) msg).getText());
-                                display.append(String.format("%d. Exchange Concluded : \n    Stock : %s\n    price : %d\n",linenumber, message.stock,message.price));
+
+                                display.append(String.format("%d. Exchange Concluded : \n    Ask/Bid : %s\n    Stock : %s\n    price : %d\n",linenumber, message.askbid,message.stock,message.price));
                                 linenumber+=1;
 //                                System.out.printf("TextMessage received: '%s'%n", ((TextMessage) msg).getText());
                             } else {

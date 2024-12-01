@@ -100,8 +100,10 @@ public class HandleRequestThread extends Thread {
                             }
                             else if( ((List)thisBidTable.get( prices[priceIndex] )).size() > 0 ) {
                                 int targetId = (int) ((List)thisBidTable.get( prices[priceIndex] )).get(0);
-                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, prices[priceIndex], idToCompany.get(targetId));
+                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, prices[priceIndex], idToCompany.get(targetId),"bid");
                                 ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                                ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock, prices[priceIndex], newRequest.securityCompany, "ask");
+                                ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
                                 newRequest.amount-=1;
                                 ((List)thisBidTable.get( prices[priceIndex] )).remove(0);
 
@@ -135,10 +137,13 @@ public class HandleRequestThread extends Thread {
 
                         while (min != 0) {
                             int targetId = idList.get(0);
-                            ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId));
+                            ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId),"bid");
+
                             idList.remove(0);
                             newRequest.amount-=1;
                             ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                            ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, newRequest.securityCompany, "ask");
+                            ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
 
                             CreateCurrentPricing createCurrentPricing = new CreateCurrentPricing(this, newRequest.stock, newRequest.price);
 //                            System.out.println(String.format(" 2what: %d",newRequest.price));
@@ -173,8 +178,10 @@ public class HandleRequestThread extends Thread {
                                 int targetId = idList.get(0);
 
 
-                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId));
+                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId),"bid");
                                 ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                                ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, newRequest.securityCompany, "ask");
+                                ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
 //                                ExchangeConcludePublisher.publishExchangeConclusion(String.format("%d : %s",targetId,idToCompany.get(targetId)));
                                 idList.remove(0);
                                 newRequest.amount-=1;
@@ -267,8 +274,10 @@ public class HandleRequestThread extends Thread {
                             else if( ((List)thisAskTable.get( prices[priceIndex] )).size() > 0 ) {
                                 int targetId = (int) ((List)thisAskTable.get( prices[priceIndex] )).get(0);
 
-                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, prices[priceIndex], idToCompany.get(targetId));
+                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, prices[priceIndex], idToCompany.get(targetId),"ask");
                                 ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                                ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock,prices[priceIndex], newRequest.securityCompany, "bid");
+                                ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
 
 //                            ExchangeConcludePublisher.publishExchangeConclusion(String.format("%d : %s",targetId,idToCompany.get(id)));
                                 newRequest.amount-=1;
@@ -298,7 +307,7 @@ public class HandleRequestThread extends Thread {
 
                         while (min != 0) {
                             int targetId = idList.get(0);
-                            ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId));
+                            ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId),"ask");
                             idList.remove(0);
                             newRequest.amount-=1;
 
@@ -307,6 +316,9 @@ public class HandleRequestThread extends Thread {
                             createCurrentPricing.start();
 
                             ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                            ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock,newRequest.price, newRequest.securityCompany, "bid");
+                            ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
+
                             min -= 1;
                         }
                     }
@@ -334,8 +346,10 @@ public class HandleRequestThread extends Thread {
                             else { //conclude found amount
                                 int targetId = idList.get(0);
 
-                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId));
+                                ExchangeConclusionMessage conclusion = new ExchangeConclusionMessage(newRequest.stock, newRequest.price, idToCompany.get(targetId),"ask");
                                 ExchangeConcludePublisher.publishExchangeConclusion(conclusion);
+                                ExchangeConclusionMessage conclusion1 = new ExchangeConclusionMessage(newRequest.stock,newRequest.price, newRequest.securityCompany, "bid");
+                                ExchangeConcludePublisher.publishExchangeConclusion(conclusion1);
 
 //                                ExchangeConcludePublisher.publishExchangeConclusion(String.format("%d : %s",targetId,idToCompany.get(targetId)));
                                 idList.remove(0);

@@ -96,7 +96,7 @@ public class AutoAskBidThread extends Thread{
             System.out.println(String.format("Creating request (%s, %s, price : %d, amount :  %d)",stock,askbid,price,amount));
             askBidPublisher.publishPrice(new AskBidRequest(stock,askbid,price,amount));
             try {
-                sleep(500);
+                sleep(500L);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

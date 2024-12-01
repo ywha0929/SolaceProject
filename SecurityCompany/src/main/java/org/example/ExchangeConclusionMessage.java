@@ -6,10 +6,12 @@ public class ExchangeConclusionMessage {
     String stock;
     int price;
     String securityCompany;
-    public ExchangeConclusionMessage(String stock, int price, String securityCompany) {
+    String askbid;
+    public ExchangeConclusionMessage(String stock, int price, String securityCompany,String askbid) {
         this.stock = stock;
         this.price = price;
         this.securityCompany = securityCompany;
+        this.askbid = askbid;
     }
     public String convertToJson() {
         Gson gson = new Gson();
