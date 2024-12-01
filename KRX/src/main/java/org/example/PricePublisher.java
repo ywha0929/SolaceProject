@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class PricePublisher {
 
-    private final BlockingDeque<String> queuePricePublisher = new LinkedBlockingDeque<>();
+    private final static BlockingDeque<Pair<String,String>> queuePricePublisher = new LinkedBlockingDeque<>();
     private Thread thread;
     private final String TOPIC = "SK/hi";
 
@@ -22,9 +22,9 @@ public class PricePublisher {
             public void run() {
                 final JCSMPProperties properties = new JCSMPProperties();
                 properties.setProperty(JCSMPProperties.HOST,"tcp://mr-connection-vht20gwjoky.messaging.solace.cloud:55555");
-                properties.setProperty(JCSMPProperties.USERNAME, "6G_YEONGWOOHA");
+                properties.setProperty(JCSMPProperties.USERNAME, "YWHA_KRX");
+                properties.setProperty(JCSMPProperties.PASSWORD, "KRX");
                 properties.setProperty(JCSMPProperties.VPN_NAME,  "ai6g");
-                properties.setProperty(JCSMPProperties.PASSWORD, "dkakwek0929!");
 
                 final JCSMPSession session;
                 try {
@@ -57,36 +57,36 @@ public class PricePublisher {
                 }
                 while (true) {
 
-                    String text = null;
+                    Pair<String,String> publishTarget;
                     try {
-                        text = queuePricePublisher.take();
+                        publishTarget = queuePricePublisher.take();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
 
                     System.out.println("running");
 
-                    final Topic topic = Topic.of(TOPIC);
+                    final Topic topic = Topic.of(String.format("currentpricing/%s",publishTarget.getSecond()));
                     TextMessage msg = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
 
-                    msg.setText(text);
+                    msg.setText(publishTarget.getFirst());
                     try {
                         prod.send(msg, topic);
                     } catch (JCSMPException e) {
                         throw new RuntimeException(e);
                     }
-                    if (text.equals(Main.EXIT_MESSAGE)) {
-                        break;
-                    }
+//                    if (text.equals(Main.EXIT_MESSAGE)) {
+//                        break;
+//                    }
                 }
             }
         });
         thread.start();
     }
 
-    public void publishPrice(String message) {
-        System.out.println("publishPrice");
-        queuePricePublisher.add(message);
+    public static void publishPrice(String message,String targetStock) {
+        System.out.println("publishPrice : " + message + " to : " + targetStock);
+        queuePricePublisher.add(new Pair<>(message,targetStock));
     }
 
 }

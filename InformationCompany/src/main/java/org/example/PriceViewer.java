@@ -3,64 +3,81 @@ package org.example;
 import com.solacesystems.jcsmp.JCSMPException;
 
 import javax.swing.*;
+import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
-import java.util.Queue;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class PriceViewer extends JFrame {
     private final BlockingDeque<String> queuePriceReceived = new LinkedBlockingDeque<>();
-    private JTextField outputField;
-    public PriceViewer() {
-        setTitle("Information Company");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 300); // 프레임 크기 설정
+    private ArrayList<JTextField> outputFields = new ArrayList<>();
+    String stock;
+    Scanner sc;
+    Thread inputThread;
+    public PriceViewer(String stock) {
+        setTitle("Information Company"+Main.companyName+" : " + stock);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 700); // 프레임 크기 설정
         Container contentPane = getContentPane(); //프레임에서 컨텐트팬 받아오기
-        contentPane.setLayout(null);
-        JTextField textField2 = new JTextField();
-        textField2.setBounds (50,20,400,200);
-        textField2.setEnabled(false);
-        contentPane.add(textField2);
-        outputField = textField2;
+        contentPane.setLayout(new GridLayout(27,1));
+
+        for(int i = 0; i< 27; i++) {
+            outputFields.add(new JTextField());
+            if(i >= 0 && i <= 12)
+                outputFields.get(i).setForeground(Color.RED);
+            else if(i == 13) {
+                outputFields.get(i).setForeground(Color.BLACK);
+            }
+            else
+                outputFields.get(i).setForeground(Color.BLUE);
+
+        }
+        for(JTextField outputField : outputFields) {
+            contentPane.add(outputField);
+        }
+
 
         setVisible(true);
-
-        Thread inputThread = new Thread(new Runnable() {
+        this.stock = stock;
+        this.sc = new Scanner(System.in);
+        inputThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Scanner sc = new Scanner(System.in);
 
-                while(true) {
 
-                    System.out.println("Choose Stock (Samsung, SK)");
-                    String stock = sc.next();
-                    PriceSubscriber priceSubscriber;;
-                    try {
-                        priceSubscriber = new PriceSubscriber(outputField,stock);
-                        priceSubscriber.start();
+                PriceSubscriber priceSubscriber;;
+                try {
+                    priceSubscriber = new PriceSubscriber(outputFields,stock);
+                    priceSubscriber.start();
 
-                    } catch (JCSMPException e) {
-                        throw new RuntimeException(e);
-                    }
-                    System.out.println("enter c for exit : ");
-                    while(!sc.next().equals("c")){
-
-                    }
-                    try {
-                        PriceSubscriber.sleep(10L);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    priceSubscriber.interrupt();
+                } catch (JCSMPException e) {
+                    throw new RuntimeException(e);
                 }
+                System.out.println("enter any for exit : ");
+                sc.nextLine();
+
+                try {
+                    PriceSubscriber.sleep(100L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                priceSubscriber.interrupt();
+                try {
+                    priceSubscriber.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+
             }
         });
         inputThread.start();
 
     }
 
-//    @Override
+    //    @Override
 //    public void run() {
 //        super.run();
 //        while (true) {

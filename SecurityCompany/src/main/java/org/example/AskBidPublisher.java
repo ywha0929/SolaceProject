@@ -10,7 +10,7 @@ public class AskBidPublisher {
 
     private final BlockingDeque<AskBidRequest> queuePricePublisher = new LinkedBlockingDeque<>();
     private Thread thread;
-    private final String TOPIC = "SK/hi";
+    private final String TOPIC = "askbidRequest";
 
     public AskBidPublisher() throws JCSMPException {
 
@@ -18,9 +18,9 @@ public class AskBidPublisher {
             public void run() {
                 final JCSMPProperties properties = new JCSMPProperties();
                 properties.setProperty(JCSMPProperties.HOST, "tcp://mr-connection-vht20gwjoky.messaging.solace.cloud:55555");
-                properties.setProperty(JCSMPProperties.USERNAME, "6G_YEONGWOOHA");
+                properties.setProperty(JCSMPProperties.USERNAME, "SecurityCompany"+Main.CompanyName);
                 properties.setProperty(JCSMPProperties.VPN_NAME, "ai6g");
-                properties.setProperty(JCSMPProperties.PASSWORD, "dkakwek0929!");
+                properties.setProperty(JCSMPProperties.PASSWORD, "SecurityCompany"+Main.CompanyName);
 
                 final JCSMPSession session;
                 try {
@@ -29,6 +29,7 @@ public class AskBidPublisher {
                     throw new RuntimeException(e);
                 }
                 try {
+                    System.out.println("SecurityCompany"+Main.CompanyName);
                     session.connect();
                 } catch (JCSMPException e) {
                     throw new RuntimeException(e);
@@ -75,12 +76,12 @@ public class AskBidPublisher {
 
                     System.out.println("AskBidPublisher running");
 
-                    final Topic topic = Topic.of(TOPIC);
+                    final Topic topic = Topic.of(String.format("%s/%s/%s/%s",TOPIC,request.stock,request.askbid,request.securityCompany));
 
 
                     TextMessage msg = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
 
-                    msg.setText(request.toString());
+                    msg.setText(request.convertToJson());
                     try {
 //                        prod.send(msg,topic);
                         Requestor requestor = session.createRequestor();
@@ -89,7 +90,8 @@ public class AskBidPublisher {
                             System.out.println(String.format("ask/bid success : %s",((TextMessage) reply).getText()));
                         }
                     } catch (JCSMPException e) {
-                        throw new RuntimeException(e);
+                        System.err.println("error");
+                        continue;
                     }
 //                    if (request.toString().equals(Main.EXIT_MESSAGE)) {
 //                        break;

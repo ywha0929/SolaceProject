@@ -1,13 +1,6 @@
 package org.example;
 
 import com.solacesystems.jcsmp.JCSMPException;
-import com.solacesystems.jcsmp.JCSMPFactory;
-import com.solacesystems.jcsmp.JCSMPProperties;
-import com.solacesystems.jcsmp.JCSMPSession;
-
-import java.util.Scanner;
-
-import static java.lang.System.exit;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -16,10 +9,20 @@ public class Main {
     public static void main(String[] args) throws JCSMPException {
 
 //        PricePublisher pricePublisher = new PricePublisher();
-        HandleRequestThread handleRequestThread = new HandleRequestThread();
-        AskBidRequestSubscriber askBidRequestSubscriber = new AskBidRequestSubscriber(handleRequestThread.queueRequests);
-        handleRequestThread.start();
-        askBidRequestSubscriber.start();
+        String[] stockSet1 = {"Samsung","LG"};
+        HandleRequestThread handleRequestThreadSamsungLG = new HandleRequestThread(stockSet1);
+        AskBidRequestSubscriber askBidRequestSubscriberSamsungLG = new AskBidRequestSubscriber(handleRequestThreadSamsungLG.queueRequests,stockSet1);
+        handleRequestThreadSamsungLG.start();
+        askBidRequestSubscriberSamsungLG.start();
+
+        String[] stockSet2 = {"SK"};
+        HandleRequestThread handleRequestThreadSK = new HandleRequestThread(stockSet2);
+        AskBidRequestSubscriber askBidRequestSubscriberSK = new AskBidRequestSubscriber(handleRequestThreadSK.queueRequests,stockSet2);
+        handleRequestThreadSK.start();
+        askBidRequestSubscriberSK.start();
+
+        ExchangeConcludePublisher exchangeConcludePublisher = new ExchangeConcludePublisher();
+        PricePublisher pricePublisher = new PricePublisher();
 
 //        //for testing
 //        ConsoleThread consoleThread = new ConsoleThread(pricePublisher);

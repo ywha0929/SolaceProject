@@ -8,12 +8,14 @@ import java.util.concurrent.BlockingDeque;
 public class AskBidRequestSubscriber extends Thread {
     JCSMPSession session = null;
     BlockingDeque handleRequestThreadQ;
-    public AskBidRequestSubscriber(BlockingDeque handleRequestThreadQ) {
+    String[] Stocks;
+    public AskBidRequestSubscriber(BlockingDeque handleRequestThreadQ, String[] Stocks) {
         final JCSMPProperties properties = new JCSMPProperties();
         properties.setProperty(JCSMPProperties.HOST,"tcp://mr-connection-vht20gwjoky.messaging.solace.cloud:55555");
-        properties.setProperty(JCSMPProperties.USERNAME, "6G_YEONGWOOHA");
+        properties.setProperty(JCSMPProperties.USERNAME, "YWHA_KRX");
+        properties.setProperty(JCSMPProperties.PASSWORD, "KRX");
         properties.setProperty(JCSMPProperties.VPN_NAME,  "ai6g");
-        properties.setProperty(JCSMPProperties.PASSWORD, "dkakwek0929!");
+
 
         final JCSMPSession session;
         try {
@@ -28,6 +30,7 @@ public class AskBidRequestSubscriber extends Thread {
         }
         this.session = session;
         this.handleRequestThreadQ = handleRequestThreadQ;
+        this.Stocks = Stocks;
     }
 
     @Override
@@ -61,6 +64,7 @@ public class AskBidRequestSubscriber extends Thread {
                         String replyString = "OK";
                         TextMessage reply = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
                         reply.setText(replyString);
+                        handleRequestThreadQ.add(message);
                         try {
                             System.out.println("sending reply");
                             producer.sendReply(msg,reply);
@@ -81,13 +85,15 @@ public class AskBidRequestSubscriber extends Thread {
 
                 }
             });
-
-            final com.solace.messaging.resources.Topic topic = Topic.of("SK/hi");
-            try {
-                session.addSubscription((Subscription) topic);
-            } catch (JCSMPException e) {
-                throw new RuntimeException(e);
+            for(String stock : Stocks) {
+                final com.solace.messaging.resources.Topic topic = Topic.of(String.format("askbidRequest/%s/>",stock));
+                try {
+                    session.addSubscription((Subscription) topic);
+                } catch (JCSMPException e) {
+                    throw new RuntimeException(e);
+                }
             }
+
             try {
                 cons.start();
             } catch (JCSMPException e) {

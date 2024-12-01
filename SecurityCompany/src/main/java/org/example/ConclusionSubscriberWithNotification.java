@@ -1,19 +1,34 @@
 package org.example;
 
+import com.solace.messaging.resources.Topic;
 import com.solacesystems.jcsmp.*;
 
-public class AutoAskBidThread extends Thread{
-    String[] stocks = {"Samsung","LG","SK","SK"};
-    String[] askbids = {"ask","bid"};
-    Integer[] prices = {0,5,10,15,20,25,30,35,40,45,50,55,60};
-    AskBidPublisher askBidPublisher;
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
-    public AutoAskBidThread(AskBidPublisher askBidPublisher) {
-        this.askBidPublisher = askBidPublisher;
-    }
-    @Override
-    public void run() {
-        super.run();
+public class ConclusionSubscriberWithNotification extends JFrame {
+    public ConclusionSubscriberWithNotification() {
+        JPanel middlePanel = new JPanel ();
+        middlePanel.setBorder ( new TitledBorder( new EtchedBorder(), "Notification Area" ) );
+
+        // create the middle panel components
+
+        JTextArea display = new JTextArea ( 16, 58 );
+        display.setEditable ( false ); // set textArea non-editable
+        JScrollPane scroll = new JScrollPane ( display );
+        scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+
+        //Add Textarea in to middle panel
+        middlePanel.add ( scroll );
+
+        // My code
+        JFrame frame = new JFrame ();
+        frame.add ( middlePanel );
+        frame.pack ();
+        frame.setLocationRelativeTo ( null );
+        frame.setVisible ( true );
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -52,7 +67,7 @@ public class AutoAskBidThread extends Thread{
                         public void onReceive(BytesXMLMessage msg) {
                             if (msg instanceof TextMessage) {
                                 ExchangeConclusionMessage message = ExchangeConclusionMessage.createFromJson(((TextMessage) msg).getText());
-                                System.out.println(String.format("%d. Exchange Concluded : \n    Stock : %s\n    price : %d\n",linenumber, message.stock,message.price));
+                                display.append(String.format("%d. Exchange Concluded : \n    Stock : %s\n    price : %d\n",linenumber, message.stock,message.price));
                                 linenumber+=1;
 //                                System.out.printf("TextMessage received: '%s'%n", ((TextMessage) msg).getText());
                             } else {
@@ -84,22 +99,5 @@ public class AutoAskBidThread extends Thread{
             }
         });
         thread.start();
-
-
-
-        while(true) {
-            int stocksRandom = (int)(Math.random()*4);
-            String stock = stocks[stocksRandom];
-            String askbid = askbids[(int) (Math.random()*2)];
-            Integer price = prices[(int) (Math.random()*13)];
-            int amount = ((int) (Math.random()*10))+1;
-            System.out.println(String.format("Creating request (%s, %s, price : %d, amount :  %d)",stock,askbid,price,amount));
-            askBidPublisher.publishPrice(new AskBidRequest(stock,askbid,price,amount));
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }

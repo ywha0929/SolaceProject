@@ -17,12 +17,12 @@ public class ConsoleThread extends Thread {
             Scanner sc = new Scanner(System.in);
             String input = sc.next();
             if(input.equals("exit")) {
-                pricePublisher.publishPrice("End of System");
+//                pricePublisher.publishPrice("End of System");
                 exit(0);
             }
             else {
                 System.out.println("publishing : "+input);
-                pricePublisher.publishPrice(input);
+//                pricePublisher.publishPrice(input);
             }
         }
     }
