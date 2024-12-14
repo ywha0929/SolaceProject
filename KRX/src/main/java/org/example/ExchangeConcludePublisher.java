@@ -55,12 +55,14 @@ public class ExchangeConcludePublisher {
                     }
 
                     Queue queue = JCSMPFactory.onlyInstance().createQueue(String.format("Q_SecurityCompany%s",Conclusion.securityCompany));
+
                     TextMessage msg = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
                     msg.setDeliveryMode(DeliveryMode.PERSISTENT);
                     String payload = Conclusion.convertToJson();
                     msg.setText(payload);
                     try {
                         prod.send(msg,queue);
+                        System.out.println("sending Conclusion message");
                     } catch (JCSMPException e) {
                         throw new RuntimeException(e);
                     }
